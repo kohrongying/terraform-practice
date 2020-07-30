@@ -22,3 +22,4 @@ Requirements:
 Note to self:
 - When using data variable for ami from the net, check to use the correct version. Certain version may be imcompatible with whatever is in your user data
 - When creating the ami from ec2, docker container will stop. When using launch config, user data should restart the container 
+- specifying `remote_state` in root `terragrunt.hcl` file will autogenerate `backend.tf` in subfolders. If you have the include block in the `terragrunt.hcl` file in the subfolder
