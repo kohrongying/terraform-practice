@@ -2,7 +2,7 @@ remote_state {
   backend = "s3"
   generate = {
     path      = "backend.tf"
-    if_exists = "overwrite_terragrunt"
+    if_exists = "skip"
   }
   config = {
     bucket = "ry-terraform-state-test"
