@@ -3,8 +3,14 @@ provider "aws" {
   region     = var.region
 }
 
+## DECLARE VARIABLES
+
 variable "region" {}
+variable "environment" {}
 variable "resource_tag" {}
+variable "public_subnet_ids" {}
+variable "security_groups" {}
+
 
 locals {
   install_docker_data = <<-EOF
@@ -18,27 +24,6 @@ locals {
               sudo docker pull nginx
               sudo docker run -d --name docker-nginx -p 80:80 nginx
               EOF
-}
-
-data "aws_vpc" "main" {
-  tags = {
-    Name = var.resource_tag
-  }
-}
-
-data "aws_subnet" "public" {
-  vpc_id = data.aws_vpc.main.id
-  tags = {
-    Name = "public 0"
-  }
-}
-
-
-data "aws_security_groups" "main" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.main.id]
-  }
 }
 
 ## WEB SERVER 
@@ -63,14 +48,14 @@ resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
 
-  vpc_security_group_ids = data.aws_security_groups.main.*.ids[0]
-  subnet_id = data.aws_subnet.public.id
+  vpc_security_group_ids = var.security_groups
+  subnet_id = var.public_subnet_ids[0]
 
   user_data = local.install_docker_data
   associate_public_ip_address = true
   key_name = "aws-test"
 
   tags = {
-    Name = var.resource_tag
+    Name = "${var.resource_tag} - ${var.environment}"
   }
 }

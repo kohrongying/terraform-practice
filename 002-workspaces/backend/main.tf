@@ -6,19 +6,14 @@ provider "aws" {
 ### DECLARE VARIABLES
 ### WILL BE SUPPLIED FROM COMMONS.TFVARS
 variable "region" {}
-variable "terraform_state_bucket" {}
-variable "terraform_state_dynamo_db" {}
 
 resource "aws_s3_bucket" "state" {
-  bucket = var.terraform_state_bucket
+  bucket = "ry-terraform-state-002-workspaces"
 
-  # Enable versioning so we can see the full revision history of our
-  # state files
   versioning {
     enabled = true
   }
 
-  # Enable server-side encryption by default
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -37,7 +32,7 @@ resource "aws_s3_bucket" "state" {
 }
 
 resource "aws_dynamodb_table" "terraform_locks" {
-  name         = var.terraform_state_dynamo_db
+  name         = "ry-terraform-state-locks-002-workspaces"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
   attribute {

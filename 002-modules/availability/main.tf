@@ -3,51 +3,30 @@ provider "aws" {
   region     = var.region
 }
 
+
+## DECLARE VARIABLES 
+
 variable "region" {}
+variable "environment" {}
 variable "resource_tag" {}
-
-data "aws_instance" "web" {
-  instance_tags = {
-    Name = var.resource_tag
-  }
-}
-
-
-data "aws_vpc" "main" {
-  tags = {
-    Name = var.resource_tag
-  }
-}
-
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.main.id
-  tags = {
-    Type = "public"
-  }
-}
-
-
-data "aws_security_groups" "main" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.main.id]ye
-  }
-}
+variable "instance_id" {}
+variable "public_subnet_ids" {}
+variable "security_groups" {}
 
 
 ## AUTO SCALING GROUP
 
 resource "aws_ami_from_instance" "web_ami" {
-  name               = "main_web"
-  source_instance_id = data.aws_instance.web.id
+  name               = "${var.resource_tag}-${var.environment}"
+  source_instance_id = var.instance_id
 }
 
 resource "aws_launch_configuration" "main" {
-  name          = "web_config"
+  name          = "web_config_${var.resource_tag}-${var.environment}"
   image_id      = aws_ami_from_instance.web_ami.id
   instance_type = "t2.micro"
   key_name = "aws-test"
-  security_groups = data.aws_security_groups.main.*.ids[0]
+  security_groups = var.security_groups
 
   user_data = <<-EOF
               #!/bin/bash
@@ -56,23 +35,25 @@ resource "aws_launch_configuration" "main" {
 }
 
 resource "aws_autoscaling_group" "main" {
-  name = "web autoscaling"
+  name = "web_autoscaling_${var.resource_tag}-${var.environment}"
   max_size = 3
   min_size = 2
   launch_configuration = aws_launch_configuration.main.name
-  vpc_zone_identifier = data.aws_subnet_ids.public.*[0]["ids"]
+  vpc_zone_identifier = var.public_subnet_ids
   load_balancers = [aws_elb.main.name]
 
-  depends_on = [
-    aws_launch_configuration.main
-  ]
+  tag {
+    key = "Name"
+    value = "${var.resource_tag} - ${var.environment}"
+    propagate_at_launch = true
+  }
 }
 
 
 # ELB
 resource "aws_elb" "main" {
-  name = "web-loadbalancer"
-  subnets = data.aws_subnet_ids.public.*[0]["ids"]
+  name = "web-loadbalancer-${var.resource_tag}-${var.environment}"
+  subnets = var.public_subnet_ids
   
   listener {
     instance_port     = 80
@@ -88,5 +69,7 @@ resource "aws_elb" "main" {
     target              = "HTTP:80/"
     interval            = 30
   }
+
+  depends_on = [aws_launch_configuration.main]
 }
 

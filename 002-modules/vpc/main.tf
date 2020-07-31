@@ -5,6 +5,7 @@ provider "aws" {
 
 variable "region" {}
 variable "resource_tag" {}
+variable "environment" {}
 
 variable "cidr_blocks" {
   type        = map
@@ -29,7 +30,7 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = var.resource_tag
+    Name = "${var.resource_tag} - ${var.environment}"
   }
 }
 
