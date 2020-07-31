@@ -4,6 +4,7 @@ provider "aws" {
 }
 
 variable "region" {}
+variable "resource_tag" {}
 
 locals {
   install_docker_data = <<-EOF
@@ -21,7 +22,7 @@ locals {
 
 data "aws_vpc" "main" {
   tags = {
-    Name = "prac-002"
+    Name = var.resource_tag
   }
 }
 
@@ -70,6 +71,6 @@ resource "aws_instance" "web" {
   key_name = "aws-test"
 
   tags = {
-    Name = "prac-002"
+    Name = var.resource_tag
   }
 }

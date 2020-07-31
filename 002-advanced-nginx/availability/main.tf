@@ -4,17 +4,18 @@ provider "aws" {
 }
 
 variable "region" {}
+variable "resource_tag" {}
 
 data "aws_instance" "web" {
   instance_tags = {
-    Name = "prac-002"
+    Name = var.resource_tag
   }
 }
 
 
 data "aws_vpc" "main" {
   tags = {
-    Name = "prac-002"
+    Name = var.resource_tag
   }
 }
 
