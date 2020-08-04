@@ -2,6 +2,7 @@ variable "resource_tag" {}
 variable "environment" {}
 variable "security_groups" {}
 variable "subnet_id" {}
+variable "iam_instance_profile" {}
 
 module "instance" {
   source = "../../003-modules/web"
@@ -10,4 +11,5 @@ module "instance" {
   security_groups = [var.security_groups]
   subnet_id = var.subnet_id
   user_data = templatefile("${path.module}/user_data.sh", {})
+  iam_instance_profile = var.iam_instance_profile
 }

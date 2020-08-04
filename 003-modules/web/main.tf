@@ -1,4 +1,5 @@
 ## DECLARE VARIABLES
+
 variable "environment" {
   default = "dev"
 }
@@ -8,6 +9,8 @@ variable "resource_tag" {
 variable "subnet_id" {}
 variable "security_groups" {}
 variable "user_data" {}
+variable "iam_instance_profile" {}
+
 
 ## WEB SERVER 
 
@@ -36,7 +39,8 @@ resource "aws_instance" "web" {
 
   user_data = var.user_data
   associate_public_ip_address = true
-  # key_name = "aws-test"
+
+  iam_instance_profile = var.iam_instance_profile
 
   tags = {
     Name = "${var.resource_tag} - ${var.environment}"
