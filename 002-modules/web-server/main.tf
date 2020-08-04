@@ -8,7 +8,7 @@ provider "aws" {
 variable "region" {}
 variable "environment" {}
 variable "resource_tag" {}
-variable "public_subnet_ids" {}
+variable "subnet_id" {}
 variable "security_groups" {}
 
 
@@ -49,7 +49,7 @@ resource "aws_instance" "web" {
   instance_type = "t2.micro"
 
   vpc_security_group_ids = var.security_groups
-  subnet_id = var.public_subnet_ids[0]
+  subnet_id = var.subnet_id
 
   user_data = local.install_docker_data
   associate_public_ip_address = true

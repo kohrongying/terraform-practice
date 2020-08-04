@@ -71,3 +71,12 @@ Note to self:
   * Cons: Have to rename variables
   * Cons: Running terraform apply in the same folder may lead to accidental changes in prod
 
+## 003
+
+Requirements:
+1. Service-2 running in the same VPC with Service-1.
+2. Service-2 can call Service-1.
+3. Using Security Group to protect Service-1 and Service-2.
+3. Service-1 and Service-2 running on AWS ECS(Fargate or EC2).
+4. Enable logging(Log Groups) and monitor(Synthetics) for Service-1 and Service-2. 
+5. Draw an architecture diagram before you create these resources(diagrams.net in Google Drive is an option).

@@ -1,8 +1,3 @@
-provider "aws" {
-  profile    = "default"
-  region     = var.region
-}
-
 variable "region" {}
 variable "resource_tag" {}
 
@@ -39,7 +34,7 @@ module "instance" {
   source = "../../../002-modules/web-server"
   region = var.region
   resource_tag = var.resource_tag
-  public_subnet_ids = tolist(data.aws_subnet_ids.private.*[0]["ids"])
+  subnet_id = tolist(data.aws_subnet_ids.private.*[0]["ids"])[0]
   security_groups = data.aws_security_groups.main.*.ids[0]
   environment = terraform.workspace
 }
@@ -49,7 +44,8 @@ module "high-availability" {
   region = var.region
   resource_tag = var.resource_tag
   instance_id = module.instance.id
-  public_subnet_ids = data.aws_subnet_ids.private.*[0]["ids"]
+  public_subnet_ids = data.aws_subnet_ids.public.*[0]["ids"]
+  private_subnet_ids = data.aws_subnet_ids.private.*[0]["ids"]
   security_groups = data.aws_security_groups.main.*.ids[0]
   environment = terraform.workspace
 }

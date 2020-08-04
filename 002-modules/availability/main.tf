@@ -11,6 +11,7 @@ variable "environment" {}
 variable "resource_tag" {}
 variable "instance_id" {}
 variable "public_subnet_ids" {}
+variable "private_subnet_ids" {}
 variable "security_groups" {}
 
 
@@ -39,7 +40,7 @@ resource "aws_autoscaling_group" "main" {
   max_size = 3
   min_size = 2
   launch_configuration = aws_launch_configuration.main.name
-  vpc_zone_identifier = var.public_subnet_ids
+  vpc_zone_identifier = var.private_subnet_ids
   load_balancers = [aws_elb.main.name]
 
   tag {

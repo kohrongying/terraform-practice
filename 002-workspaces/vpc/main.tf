@@ -1,8 +1,3 @@
-provider "aws" {
-  profile    = "default"
-  region     = var.region
-}
-
 variable "region" {}
 variable "resource_tag" {}
 
@@ -12,4 +7,3 @@ module "vpc" {
   resource_tag = var.resource_tag
   environment = terraform.workspace
 }
-

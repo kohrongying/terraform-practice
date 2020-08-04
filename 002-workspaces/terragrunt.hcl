@@ -13,3 +13,13 @@ remote_state {
     dynamodb_table = "ry-terraform-state-locks-002-workspaces"
   }
 }
+
+generate "provider" {
+  path = "provider.tf"
+  if_exists = "skip"
+  contents = <<EOF
+provider "aws" {
+  region = var.region
+}
+EOF
+}
