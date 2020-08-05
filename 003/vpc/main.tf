@@ -15,10 +15,6 @@ output "sg_http" {
   value = module.vpc.security_groups["http"]
 }
 
-output "sg_ssh" {
-  value = module.vpc.security_groups["ssh"]
-}
-
 output "vpc_id" {
   value = module.vpc.vpc_id
 }

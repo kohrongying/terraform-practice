@@ -6,11 +6,11 @@ variable "environment" {
 variable "resource_tag" {
   default = "prac"
 }
-variable "subnet_id" {}
+variable "subnet_ids" {}
 variable "security_groups" {}
 variable "user_data" {}
 variable "iam_instance_profile" {}
-
+variable "my_count" {}
 
 ## WEB SERVER 
 
@@ -31,11 +31,13 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "web" {
+  count = var.my_count
+
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
 
   vpc_security_group_ids = var.security_groups
-  subnet_id = var.subnet_id
+  subnet_id = var.subnet_ids[count.index]
 
   user_data = var.user_data
   associate_public_ip_address = true
