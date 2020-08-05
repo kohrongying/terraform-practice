@@ -71,12 +71,51 @@ Note to self:
   * Cons: Have to rename variables
   * Cons: Running terraform apply in the same folder may lead to accidental changes in prod
 
+**UPDATE**:
+- Use 003-modules/vpc for more concise and smaller cidr blocks
+- Use ALB instead of Classic LB
+- Have to add default security group to launch config and LB (intra-node communication) - see `002-modules/availability`
+- Use `terragrunt apply-all` and `terragrunt destroy-all`
+- Use SSM to handle ssh sessions (require iam policy and role), don't have to open port 22 anymore!
+- Use module outputs with terragrunt
+```terraform
+// vpc/main.tf
+module "vpc" {
+  source = "../../003-modules/vpc"
+  resource_tag = var.resource_tag
+  environment = terraform.workspace
+}
+
+output "subnets" {
+  value = module.vpc.subnets
+}
+
+// web/terragrunt.hcl
+dependency "vpc" {
+  config_path = local.vpc_path
+}
+
+inputs = {
+  public_subnet_ids = dependency.vpc.outputs.subnets["public"]
+  private_subnet_ids = dependency.vpc.outputs.subnets["private"]
+  vpc_id = dependency.vpc.outputs.vpc_id
+}
+```
+- Remember to specify type of variable (eg `type = list(string)`) else terragrunt inputs will read lists as string (cos thats how terraform reads TF_VARS)
+
 ## 003
 
 Requirements:
-1. Service-2 running in the same VPC with Service-1.
+1. Service-2 running in another private subnet, same VPC with Service-1.
 2. Service-2 can call Service-1.
 3. Using Security Group to protect Service-1 and Service-2.
 3. Service-1 and Service-2 running on AWS ECS(Fargate or EC2).
 4. Enable logging(Log Groups) and monitor(Synthetics) for Service-1 and Service-2. 
 5. Draw an architecture diagram before you create these resources(diagrams.net in Google Drive is an option).
+(Opt) 6. Use SSM
+
+Note to self:
+* A special double-slash syntax is interpreted by Terraform to indicate that the remaining path after that point is a sub-directory within the package.
+* ECS with fargate (fargate will manage ec2 instances)
+  - [Fargate with task networking](https://aws.amazon.com/blogs/compute/task-networking-in-aws-fargate/)
+* ECS with EC2 - may use ASG to define cluster
