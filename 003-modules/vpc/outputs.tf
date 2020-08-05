@@ -7,7 +7,8 @@ output "subnets" {
 
 output "security_groups" {
   value = {
-    "http" = aws_security_group.http.id
+    "http" = aws_security_group.http.id,
+    "default" = data.aws_security_group.default.id
   }
 }
 

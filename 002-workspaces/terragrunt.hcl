@@ -2,24 +2,25 @@ remote_state {
   backend = "s3"
   generate = {
     path      = "backend.tf"
-    if_exists = "skip"
+    if_exists = "overwrite_terragrunt"
   }
   config = {
-    bucket = "ry-terraform-state-002-workspaces"
+    bucket = "ry-terraform-prac"
 
-    key = "${path_relative_to_include()}/terraform.tfstate"
-    region         = "us-east-1"
+    key = "002/workspaces/${path_relative_to_include()}/terraform.tfstate"
+    region         = "ap-southeast-1"
     encrypt        = true
-    dynamodb_table = "ry-terraform-state-locks-002-workspaces"
+    dynamodb_table = "ry-terraform-prac"
   }
 }
 
 generate "provider" {
   path = "provider.tf"
-  if_exists = "skip"
+  if_exists = "overwrite_terragrunt"
   contents = <<EOF
 provider "aws" {
-  region = var.region
+  region = "ap-southeast-1"
+  profile = "default"
 }
 EOF
 }
