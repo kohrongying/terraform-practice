@@ -4,13 +4,15 @@ variable "environment" {
   default = "dev"
 }
 variable "resource_tag" {
-  default = "prac"
+  default = "prac-003"
 }
 variable "subnet_ids" {}
 variable "security_groups" {}
 variable "user_data" {}
 variable "iam_instance_profile" {}
-variable "my_count" {}
+variable "my_count" {
+  default = 1
+}
 
 ## WEB SERVER 
 
