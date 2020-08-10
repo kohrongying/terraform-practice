@@ -20,7 +20,7 @@ resource "aws_ecs_service" "main" {
   task_definition = aws_ecs_task_definition.main.arn
   desired_count   = 2
   launch_type = "FARGATE"
-  
+
   load_balancer {
     container_name = var.name
     container_port = var.port
@@ -42,6 +42,7 @@ resource "aws_lb" "main" {
   load_balancer_type = "application"
   security_groups = var.security_groups
   subnets = var.subnet_ids
+  internal           = true
 }
 
 resource "aws_lb_target_group" "main" {
@@ -53,6 +54,8 @@ resource "aws_lb_target_group" "main" {
   target_type = "ip"
 }
 
+// listener listens on port 80 from the internet
+// forwards traffic to port xx of the TG
 resource "aws_lb_listener" "web" {
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
@@ -62,4 +65,8 @@ resource "aws_lb_listener" "web" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.main.arn
   }
+}
+
+output "lb_dns" {
+  value = aws_lb.main.dns_name
 }

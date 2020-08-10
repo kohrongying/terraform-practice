@@ -9,11 +9,15 @@ variable "iam_instance_profile" {}
 module "instance" {
   source = "../../003-modules/web"
 
-  my_count = 2
+  my_count = 1
   resource_tag = var.resource_tag
   environment = var.environment
   security_groups = [var.security_groups]
   subnet_ids = var.subnet_ids
   user_data = templatefile("${path.module}/user_data.sh", {})
   iam_instance_profile = var.iam_instance_profile
+}
+
+output "public_ip" {
+  value = module.instance.public_ip
 }

@@ -1,45 +1,39 @@
-provider "aws" {
-  profile = "default"
-  region = "ap-southeast-1"
+locals {
+  flask_port = "5050"
+  node_port = "8080"
+  service1_name = "flask"
+  service2_name = "node"
 }
 
-variable "nginx_service_name" {
-  default = "nginx"
+variable "subnet_ids" {
+  type = list(string)
+}
+
+variable "vpc_id" {
   type = string
 }
-
-variable "web_service_name" {
-  default = "web"
-  type = string
-}
-
-variable "port" {
-  default = "80"
-  type = string
-}
-
 
 module "service1" {
   source = "../../003-modules/ecs-service"
-  port = var.port
-  name = var.nginx_service_name
-  subnet_ids = data.aws_subnet_ids.default.ids
-  security_groups = ["sg-09049d812ef437d56"]
-  vpc_id = "vpc-4d2fc92b"
+  port = local.flask_port
+  name = local.service1_name
+  subnet_ids = var.subnet_ids
+  security_groups = [aws_security_group.allow_port_5000.id, aws_security_group.allow_port_80.id]
+  vpc_id = var.vpc_id
   container_definitions = <<EOF
   [{
-    "name": "${var.nginx_service_name}",
-    "image": "nginx:latest",
+    "name": "${local.service1_name}",
+    "image": "rongdock/flask-api:latest",
     "cpu": 10,
-    "memory": 10,
+    "memory": 256,
     "essential": true,
     "portMappings": [{
-        "containerPort": ${var.port}
+        "containerPort": ${local.flask_port}
       }],
     "logConfiguration": { 
       "logDriver": "awslogs",
       "options": { 
-          "awslogs-group" : "${var.nginx_service_name}",
+          "awslogs-group" : "${local.service1_name}",
           "awslogs-region": "ap-southeast-1",
           "awslogs-stream-prefix": "ecs"
       }
@@ -52,35 +46,34 @@ module "service1" {
 
 module "service2" {
   source = "../../003-modules/ecs-service"
-  port = var.port
-  name = var.web_service_name
-  subnet_ids = data.aws_subnet_ids.default.ids
-  security_groups = ["sg-09049d812ef437d56"]
-  vpc_id = "vpc-4d2fc92b"
+  port = local.node_port
+  name = local.service2_name
+  subnet_ids = var.subnet_ids
+  security_groups = [aws_security_group.allow_port_8080.id, aws_security_group.allow_port_80.id]
+  vpc_id = var.vpc_id
   container_definitions = <<EOF
   [{
-    "command": [
-            "/bin/sh -c \"echo '<html> <head> <title>Amazon ECS Sample App</title> <style>body {margin-top: 40px; background-color: #333;} </style> </head><body> <div style=color:white;text-align:center> <h1>Amazon ECS Sample App</h1> <h2>Congratulations!</h2> <p>Your application is now running on a container in Amazon ECS.</p> </div></body></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
-         ],
-    "entryPoint": [
-      "sh",
-      "-c"
+    "name": "${local.service2_name}",
+    "image": "rongdock/node-web-app:latest",
+    "environment": [
+      {
+        "name": "BASE_URL",
+        "value": "${module.service1.lb_dns}"
+      }
     ],
-    "name": "${var.web_service_name}",
-    "image": "httpd:2.4",
-    "logConfiguration": { 
+    "logConfiguration": {
       "logDriver": "awslogs",
-      "options": { 
-          "awslogs-group" : "${var.web_service_name}",
+      "options": {
+          "awslogs-group" : "${local.service2_name}",
           "awslogs-region": "ap-southeast-1",
           "awslogs-stream-prefix": "ecs"
       }
     },
     "cpu": 10,
-    "memory": 10,
+    "memory": 256,
     "essential": true,
     "portMappings": [{
-        "containerPort": ${var.port}
+        "containerPort": ${local.node_port}
       }]
   }]
   EOF
@@ -92,6 +85,53 @@ resource "aws_ecs_cluster" "main" {
   name = "ecs-cluster"
 }
 
-data "aws_subnet_ids" "default" {
-  vpc_id = "vpc-4d2fc92b"
+resource "aws_security_group" "allow_port_5000" {
+  name = "allow web on port 5000"
+  vpc_id = var.vpc_id
+  ingress {
+    from_port = 5000
+    to_port = 5000
+    cidr_blocks = ["10.0.0.128/27", "10.0.0.160/27"]
+    protocol = "tcp"
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "allow_port_8080" {
+  name = "allow web on port 8080"
+  vpc_id = var.vpc_id
+  ingress {
+    from_port = 8080
+    to_port = 8080
+    cidr_blocks = ["10.0.0.128/27", "10.0.0.160/27"]
+    protocol = "tcp"
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "allow_port_80" {
+  name = "allow web on port 80"
+  vpc_id = var.vpc_id
+  ingress {
+    from_port = 80
+    to_port = 80
+    cidr_blocks = ["10.0.0.128/27", "10.0.0.160/27"]
+    protocol = "tcp"
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
