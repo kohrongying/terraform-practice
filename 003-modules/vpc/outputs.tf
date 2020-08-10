@@ -15,3 +15,10 @@ output "security_groups" {
 output "vpc_id" {
   value = aws_vpc.main.id
 }
+
+output "cidr_blocks" {
+  value = {
+    "public": var.cidr_blocks.public,
+    "private": var.cidr_blocks.private
+  }
+}

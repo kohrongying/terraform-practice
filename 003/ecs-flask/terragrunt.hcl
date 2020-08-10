@@ -33,4 +33,5 @@ inputs = {
   vpc_id = dependency.vpc.outputs.vpc_id
   cluster_id = dependency.cluster.outputs.cluster_id
   execution_role_arn = dependency.iam.outputs.task_execution_arn
+  sg_ingress_cidr_blocks = dependency.vpc.outputs.cidr_blocks["private"]
 }

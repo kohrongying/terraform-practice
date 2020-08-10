@@ -18,7 +18,10 @@ variable "security_groups" {
   type = list(string)
   default = []
 }
-variable "ingress_cidr_blocks" {}
+variable "sg_ingress_cidr_blocks" {
+  type = list(string)
+  default = []
+}
 
 module "service2" {
   source = "../ecs-service"
@@ -63,13 +66,13 @@ resource "aws_security_group" "allow_port_8080" {
   ingress {
     from_port = local.node_port
     to_port = local.node_port
-    cidr_blocks = ["10.0.0.128/27", "10.0.0.160/27"]
+    cidr_blocks = var.sg_ingress_cidr_blocks
     protocol = "tcp"
   }
   ingress {
     from_port = 80
     to_port = 80
-    cidr_blocks = ["10.0.0.128/27", "10.0.0.160/27"]
+    cidr_blocks = var.sg_ingress_cidr_blocks
     protocol = "tcp"
   }
   egress {
