@@ -106,12 +106,12 @@ inputs = {
 ## 003
 
 Requirements:
-1. Service-2 running in another private subnet, same VPC with Service-1.
-2. Service-2 can call Service-1.
-3. Using Security Group to protect Service-1 and Service-2.
-3. Service-1 and Service-2 running on AWS ECS(Fargate or EC2).
-4. Enable logging(Log Groups) and monitor(Synthetics) for Service-1 and Service-2. 
-5. Draw an architecture diagram before you create these resources(diagrams.net in Google Drive is an option).
+[x] Service-2 running in another private subnet, same VPC with Service-1.
+[x] Service-2 can call Service-1.
+[x] Using Security Group to protect Service-1 and Service-2.
+[x] Service-1 and Service-2 running on AWS ECS(Fargate or EC2).
+[x] Enable logging(Log Groups) and monitor(Synthetics) for Service-1 and Service-2. maybe another monitoring tool
+[x] Draw an architecture diagram before you create these resources(diagrams.net in Google Drive is an option).
 (Opt) 6. Use SSM
 
 Note to self:
@@ -119,3 +119,8 @@ Note to self:
 * ECS with fargate (fargate will manage ec2 instances)
   - [Fargate with task networking](https://aws.amazon.com/blogs/compute/task-networking-in-aws-fargate/)
 * ECS with EC2 - may use ASG to define cluster
+* Wanted to create a shared iam role for modules - unable to do conditional creation (terraform supports declarative style - should be explicit if resource is created or referenced)
+* [Synthetics not out for terraform aws provider](https://github.com/terraform-providers/terraform-provider-aws
+/issues/11145) -> could use other [monitoring tools](https://docs.aws.amazon.com/AmazonECS/latest/developerguide
+/monitoring-automated-manual.html) for ecs
+* Synthetics - creating a canary. Use vpc, private subnets and provide loadbalancer dns. It somehow just works. Creates a lambda function and ENIs => have to remember to delete them manually
