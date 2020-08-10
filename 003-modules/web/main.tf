@@ -6,8 +6,12 @@ variable "environment" {
 variable "resource_tag" {
   default = "prac-003"
 }
-variable "subnet_ids" {}
-variable "security_groups" {}
+variable "subnet_ids" {
+  type = list(string)
+}
+variable "security_groups" {
+  type = list(string)
+}
 variable "user_data" {}
 variable "iam_instance_profile" {}
 variable "my_count" {

@@ -12,6 +12,11 @@ resource "aws_ecs_task_definition" "main" {
   
   // Fargate requires task definition to have execution role ARN to support log driver awslogs.
   execution_role_arn = var.execution_role_arn
+  depends_on = [aws_cloudwatch_log_group.main]
+}
+
+resource "aws_cloudwatch_log_group" "main" {
+  name = var.name
 }
 
 resource "aws_ecs_service" "main" {

@@ -31,6 +31,3 @@ resource "aws_iam_role_policy_attachment" "test" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
 }
 
-output "iam_instance_profile" {
-  value = aws_iam_instance_profile.ssm_profile.name
-}
