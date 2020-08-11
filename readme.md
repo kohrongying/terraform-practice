@@ -114,6 +114,8 @@ Requirements:
 [x] Draw an architecture diagram before you create these resources(diagrams.net in Google Drive is an option).
 (Opt) 6. Use SSM
 
+![architecture diagram](003-arch-diagram.png)
+
 Note to self:
 * A special double-slash syntax is interpreted by Terraform to indicate that the remaining path after that point is a sub-directory within the package.
 * ECS with fargate (fargate will manage ec2 instances)
