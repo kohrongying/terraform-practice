@@ -77,19 +77,8 @@ Note to self:
 - Have to add default security group to launch config and LB (intra-node communication) - see `002-modules/availability`
 - Use `terragrunt apply-all` and `terragrunt destroy-all`
 - Use SSM to handle ssh sessions (require iam policy and role), don't have to open port 22 anymore!
-- Use module outputs with terragrunt
+- Use dependency outputs with terragrunt
 ```terraform
-// vpc/main.tf
-module "vpc" {
-  source = "../../003-modules/vpc"
-  resource_tag = var.resource_tag
-  environment = terraform.workspace
-}
-
-output "subnets" {
-  value = module.vpc.subnets
-}
-
 // web/terragrunt.hcl
 dependency "vpc" {
   config_path = local.vpc_path
@@ -118,6 +107,8 @@ Requirements:
 
 Note to self:
 * A special double-slash syntax is interpreted by Terraform to indicate that the remaining path after that point is a sub-directory within the package.
+    - If your terragrunt source, also requires a module (using relative path), then have to use double slask to
+     denote the root directory so that the relative path in the module will work properly
 * ECS with fargate (fargate will manage ec2 instances)
   - [Fargate with task networking](https://aws.amazon.com/blogs/compute/task-networking-in-aws-fargate/)
 * ECS with EC2 - may use ASG to define cluster
