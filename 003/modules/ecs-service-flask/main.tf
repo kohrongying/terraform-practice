@@ -23,7 +23,7 @@ variable "sg_ingress_cidr_blocks" {
 }
 
 module "flask" {
-  source = "../ecs-service"
+  source = "../../..//services-shared/modules/ecs-service"
   port = local.flask_port
   name = local.service1_name
   subnet_ids = var.subnet_ids

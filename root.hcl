@@ -7,7 +7,7 @@ remote_state {
   config = {
     bucket = "ry-terraform-prac"
 
-    key = "003/${path_relative_to_include()}/terraform.tfstate"
+    key = "${path_relative_to_include()}/terraform.tfstate"
     region         = "ap-southeast-1"
     encrypt        = true
     dynamodb_table = "ry-terraform-prac"

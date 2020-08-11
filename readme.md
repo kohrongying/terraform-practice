@@ -117,3 +117,7 @@ Note to self:
 /issues/11145) -> could use other [monitoring tools](https://docs.aws.amazon.com/AmazonECS/latest/developerguide
 /monitoring-automated-manual.html) for ecs
 * Synthetics - creating a canary. Use vpc, private subnets and provide loadbalancer dns. It somehow just works. Creates a lambda function and ENIs => have to remember to delete them manually
+
+**UPDATE**
+* Replicate project structure with services-shared and group by env
+* TODO: Use one LB instead of two. Use apply different rule

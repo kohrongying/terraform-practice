@@ -24,7 +24,7 @@ variable "sg_ingress_cidr_blocks" {
 }
 
 module "service2" {
-  source = "../ecs-service"
+  source = "../../../services-shared/modules/ecs-service"
   port = local.node_port
   name = local.service2_name
   subnet_ids = var.subnet_ids

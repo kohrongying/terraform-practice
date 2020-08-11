@@ -1,7 +1,7 @@
 variable "resource_tag" {}
 
 module "vpc" {
-  source = "../../003-modules/vpc"
+  source = "../../services-shared/modules/vpc"
   resource_tag = var.resource_tag
   environment = terraform.workspace
 }
